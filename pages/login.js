@@ -1,8 +1,8 @@
 /** @format */
 
-import { signIn } from "next-auth/react";
+import { signIn, getCsrfToken } from "next-auth/react";
 
-export default function Login() {
+export default function Login({ csrfToken }) {
   return (
     <>
       <button
@@ -19,6 +19,28 @@ export default function Login() {
       >
         Continue with facebook
       </button>
+      <div>
+        <form method="post" action="/api/auth/signin/email">
+          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          <label>
+            Email:
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter email"
+            />
+          </label>
+          <button type="submit">Continue with email (magic link)</button>
+        </form>
+      </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const csrfToken = await getCsrfToken(context);
+  return {
+    props: { csrfToken },
+  };
 }
